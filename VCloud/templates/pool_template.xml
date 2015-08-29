@@ -1,0 +1,18 @@
+<pool type='dir'>
+  <name>name</name>
+  <uuid></uuid>
+  <capacity unit='GiB'>20</capacity>
+  <allocation unit='GiB'>20</allocation>
+  <available unit='GiB'>20</available>
+  <source>
+  </source>
+  <target>
+    <path>/home/Aaditya/Templates/cloud/test/</path>
+    <permissions>
+      <mode>0755</mode>
+      <owner>-1</owner>
+      <group>-1</group>
+    </permissions>
+  </target>
+</pool>
+
