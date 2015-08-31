@@ -94,8 +94,8 @@ def pm_list():
     """
     Lists all the physical machines available to the app.
     """
-
-    machines = [1, 2, 3]
+    from VCloud.pm import list_pm
+    machines = list_pm()
     return flask.jsonify({'pmids':machines})
 
 @app.route('/pm/<int:pmid>/listvms')
@@ -103,7 +103,10 @@ def list_vms(pmid):
     """
     List all the VMs running on a particular physical machine.
     """
-    vms = [1, 2, 3]
+    from VCloud.pm import list_vm
+    vms = list_vm(pmid)
+    if vms is None:
+        return flask.jsonify({'vmids':'0', 'Error':'Wrong pmid.'})
     return flask.jsonify({'vmids':vms})
 
 @app.route('/pm/<int:pmid>')
@@ -112,8 +115,6 @@ def pm_stat(pmid):
     Displays all the stats of the Physical Machine.
     Stats include CPU, RAM and DISK: capacity and free.
     Number of VMs.
-    """
-
     ret = {
             'pmid':pmid,
             'capacity':{
@@ -128,6 +129,11 @@ def pm_stat(pmid):
                 },
             'vms':3,
             }
+    """
+    from VCloud.pm import pm_query
+    ret = pm_query(pmid)
+    if ret == 0:
+        return flask.jsonify({'pmid':0, 'Error':'Wrong pmid'})
     return flask.jsonify(ret)
 
 # requests related to installation images
