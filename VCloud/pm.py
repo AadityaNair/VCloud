@@ -16,7 +16,6 @@ def list_pm():
     List all the pms available
     """
     num = phy_mach.count()
-
     return range(1, num+1)
 
 
@@ -25,6 +24,8 @@ def list_vm(pmid):
     List all VMs in a PM.
     """
     pm = phy_mach.find_one({'pmid':pmid})
+    if pm is None:
+        return None
     return pm['vm_id']
 
 
@@ -34,7 +35,9 @@ def pm_query(pmid):
     """
     ret ={}
     pm = phy_mach.find_one({'pmid':pmid})
-    
+    if pm is None:
+        return 0
+
     ret['pmid'] = pmid
     ret['vms'] = pm['vm_count']
     ret['capacity'] = {
