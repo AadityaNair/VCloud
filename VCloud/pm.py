@@ -47,8 +47,8 @@ def pm_query(pmid):
             }
     # TODO: Mon Aug 31 13:14:56 IST 2015 VCPU count ?
     
-    conn = libvirt.open(machine['uri'])
-    free = conn.getMemoryStats(0)['free']
+    conn = libvirt.open(pm['uri'])
+    free = conn.getMemoryStats(0)['free']/1024
     conn.close()
 
     ret['free'] = {

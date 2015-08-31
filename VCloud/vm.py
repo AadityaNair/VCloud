@@ -43,11 +43,11 @@ def create(name, inst_type):
     """
     Create a virtual machine based on instance type.
     """
-    XmlDesc = open('./templates/vm_template.xml').read()
+    XmlDesc = open('./VCloud/templates/vm_template.xml').read()
     XmlDesc = XmlDesc.replace('{{name}}', name)
     
     try:
-        rep = instances[inst_type]
+        rep = instances[int(inst_type)]
     except KeyError:
         return 0, "Wrong instance instance type"
 
@@ -57,15 +57,15 @@ def create(name, inst_type):
 
     # query the physical machine
 
-    try:
-        conn, machine = find_best(ram_req)
-        dom=conn.createXML(xml)
-    except:
-        return 0, "Unable to create VM."
+    conn, machine = find_best(ram_req)
+    # try:
+    dom=conn.createXML(XmlDesc)
+    # except ValueError:
+        # return 0, "Unable to create VM."
     
     machine['vm_count'] += 1
 
-    vmid = str(machine[pmid])+'pv'+str(dom.ID())
+    vmid = str(machine['pmid'])+'pv'+str(dom.ID())
     machine['vm_id'].append(vmid)
 
     pm.update({'_id':machine['_id']}, {'$set':machine}, upsert=False)
@@ -77,19 +77,23 @@ def query(id):
     """
     Queries various stats about the vmid specified.
     """
-    pmid, vmid = id.split('pv')
+    try:
+        pmid, vmid = id.split('pv')
+        pmid, vmid = int(pmid), int(vmid)
+    except ValueError:
+        return 0, None, None, None, "Wrong id."
     
     machine = pm.find_one({'pmid':pmid})
     if machine is None:
-        return 0, None, None, None, "Wrong pmid"
+        return 0, None, None, None, "Wrong pmid."
     conn = libvirt.open(machine['uri'])
     
     try:
         dom = conn.lookupByID(vmid)
-    except libvirt.libvirtError
+    except libvirt.libvirtError:
         return pmid, 0, None, None, "Incorrect vmid."
 
-    name , inst_type = dom.name() int(dom.maxMemory()/(1024*1024))
+    name , inst_type = dom.name(), int(dom.maxMemory()/(1024*1024))
     conn.close()
     return pmid, vmid, name, inst_type, None
 
@@ -97,7 +101,12 @@ def destroy(id):
     """
     Destroys the vmid provided.
     """
-    pmid, vmid = id.split('pv')
+    try:
+        pmid, vmid = id.split('pv')
+        pmid, vmid = int(pmid), int(vmid)
+    except ValueError:
+        return 0, "Wrong id."
+
     machine = pm.find_one({'pmid':pmid})
     if machine is None:
         return 0, "Wrong pmid"

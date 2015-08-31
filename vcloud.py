@@ -44,11 +44,11 @@ def vm_query():
     if id is None:
         flask.abort(400)
 
-    import VCloud.vm import query
+    from VCloud.vm import query
     pmid, vmid, name, inst_type, mesg = query(id)
 
     if pmid == 0 or vmid == 0:
-        return flask.jsonify({'Error':mesg}}
+        return flask.jsonify({'Error':mesg})
     else:
         ret={
             'vmid':vmid,
@@ -65,7 +65,7 @@ def vm_destroy():
         flask.abort(400)
     
     from VCloud.vm import destroy
-    status, msg = destroy(vmid)
+    status, msg = destroy(vm_id)
     if msg is None:
         return flask.jsonify({'status':status})
     else:
@@ -153,4 +153,6 @@ def image_list():
     return flask.jsonify({'images':img})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    from VCloud.initialise import init_ip
+    init_ip(['127.0.0.1'])
+    app.run(host='0.0.0.0', debug=True, use_reloader=False)
