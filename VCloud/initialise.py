@@ -31,6 +31,8 @@ def init_ip(list_of_ips):
         info['vm_id'] = []
         info['ip'] = ip
         info['uri'] = 'qemu+ssh://'+str(ip)+'/system'
+        if ip == '127.0.0.1'
+            info['uri'] = 'qemu:///system'
         # TODO: Sun Aug 30 02:14:52 IST 2015 Get username. Don't use defaults.
         available = info['available'] = {}
         
