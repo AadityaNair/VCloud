@@ -30,44 +30,62 @@ def vm_create():
     vm_type = request.args.get('instance_type', None)
     if vm_name is None or vm_type is None:
         flask.abort(400)
-    pass
     
-    return flask.jsonify({'vmid':0})
+    from VCloud.vm import create
+    vmid, msg = create(vm_name, vm_type)
+    
+    if vmid == 0:
+        return flask.jsonify({'vmid':0, 'Error': msg})
+    return flask.jsonify({'vmid':vmid})
 
 @app.route('/vm/query')
 def vm_query():
-    vm_id = request.args.get('vmid', None)
+    id = request.args.get('vmid', None)
+    if id is None:
+        flask.abort(400)
 
-    ret={
-            'vmid':0,
-            'name':"test",
-            'instance_type':3,
-            'pmid':2,
-        }
-    return flask.jsonify(ret)
+    import VCloud.vm import query
+    pmid, vmid, name, inst_type, mesg = query(id)
+
+    if pmid == 0 or vmid == 0:
+        return flask.jsonify({'Error':mesg}}
+    else:
+        ret={
+            'vmid':vmid,
+            'name':name,
+            'instance_type':inst_type,
+            'pmid':pmid,
+            }
+        return flask.jsonify(ret)
 
 @app.route('/vm/destroy')
 def vm_destroy():
     vm_id = request.args.get('vmid', None)
     if vm_id is None:
         flask.abort(400)
+    
+    from VCloud.vm import destroy
+    status, msg = destroy(vmid)
+    if msg is None:
+        return flask.jsonify({'status':status})
+    else:
+        return flask.jsonify({'status':status, 'Error':msg})
 
-    return flask.jsonify({'status':1})
 
 @app.route('/vm/types')
 def vm_types():
     """
     Returns a list of all possible types of vm instances that can exist.
     Types include TypeID(tid), CPUs, RAM and DISK.
-    """
-
     inst_types = [{
         'tid':1,
         'cpu':2,
         'ram':512,
         'disk': 1024,
         }]
-    return flask.jsonify({'types':inst_types}), 300
+    """
+    from VCloud.vm import types
+    return flask.jsonify({'types':types()})
 
 
 # Requests related to information about Physical Machines.
