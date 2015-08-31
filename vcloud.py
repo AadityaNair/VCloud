@@ -19,7 +19,7 @@ def hello():
 
 # Requests related to VM creation, deletion and types.
 
-@app.route('/vm/create', methods=['GET', 'POST'])
+@app.route('/vm/create')
 def vm_create():
     """
     Used to create a VM.
