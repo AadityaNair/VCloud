@@ -27,23 +27,21 @@ def init_ip(list_of_ips):
         info = {}
 
         info['pmid'] = id_counter
+        info['vm_count'] = 0
+        info['vm_id'] = []
         info['ip'] = ip
         info['uri'] = 'qemu+ssh://'+str(ip)+'/system'
         # TODO: Sun Aug 30 02:14:52 IST 2015 Get username. Don't use defaults.
         available = info['available'] = {}
-        free = info['free'] = {}
         
         # TODO: Sun Aug 30 03:32:25 IST 2015 Error Handling.
         conn = libvirt.open(info['uri'])
         available['vcpu'] = free['vcpu'] = conn.getMaxVcpus(None)
         
         mem = conn.getMemoryStats(0) # Returns memory in KiB
-        available['memory'], free['memory'] = mem['total'], mem['free']
-        available['memory'] /= 1024
-        free['memory'] /= 1024
+        available['memory'] = mem['total']/1024
         
         data.append(info)
-
         conn.close()
         id_counter += 1
     
