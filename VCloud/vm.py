@@ -12,16 +12,18 @@ connection = pymongo.MongoClient()
 db = connection['VCloud']
 pm = db.phy_mach
 # TODO: Mon Aug 31 01:29:05 IST 2015 Better instance Handling.
-instances = {
-        1: [
-            ('{{memory}}', 1024),
-            ('{{vcpu}}', 1),
-            ],
-        2: [
-            ('{{memory}}', 2048),
-            ('{{vcpu}}', 2),
-            ]
-        }
+# instances = {
+        # 1: [
+            # ('{{memory}}', 1024),
+            # ('{{vcpu}}', 1),
+            # ],
+        # 2: [
+            # ('{{memory}}', 2048),
+            # ('{{vcpu}}', 2),
+            # ]
+        # }
+flavors = db.flavors.find_one()
+instances = flavors['types']
 
 def find_best(mem):
     """
@@ -47,7 +49,7 @@ def create(name, inst_type):
     XmlDesc = XmlDesc.replace('{{name}}', name)
     
     try:
-        rep = instances[int(inst_type)]
+        rep = instances[inst_type]
     except KeyError:
         return 0, "Wrong instance instance type"
 
@@ -129,8 +131,8 @@ def types():
     Return VM instance types.
     """
     ret = []
-
-    for key, value in instances:
+    print instances
+    for key, value in instances.iteritems():
         d = {}
         d['tid'] = key
         d['ram'] = value[0][1]
