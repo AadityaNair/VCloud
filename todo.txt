@@ -1,0 +1,7 @@
+install pymongo
+copy images
+use images
+get the files to the repo root
+syslog
+error handling
+documentation
