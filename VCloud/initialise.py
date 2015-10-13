@@ -12,6 +12,8 @@
 import pymongo, libvirt
 connection = pymongo.MongoClient('mongodb://localhost:27017/')
 db = connection['VCloud']
+import os
+print os.getcwd()
 
 def init_ip(list_of_ips):
     """

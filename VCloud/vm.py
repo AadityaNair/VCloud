@@ -138,6 +138,6 @@ def types():
         d['ram'] = value[0][1]
         d['cpu'] = value[1][1]
         d['disk'] = 3
-
+        print value[0][1], value[1][1]
         ret.append(d)
-    return d
+    return ret

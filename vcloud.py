@@ -136,8 +136,61 @@ def pm_stat(pmid):
         return flask.jsonify({'pmid':0, 'Error':'Wrong pmid'})
     return flask.jsonify(ret)
 
-# requests related to installation images
+# storage handling requests
+from VCloud import storage
 
+@app.route('/volume/create')
+def create_vol():
+    name = request.args.get('name', None)
+    size = request.args.get('size', None)
+    
+    status = storage.create_volume(name, size)
+    if status == -1:
+        return flask.jsonify({'volumeid':0})
+    else:
+        return flask.jsonify({'volumeid':name})
+
+@app.route('/volume/query')
+def query_vol():
+    volumeid = request.args.get('volumeid', None)
+    data = storage.query_volume(volumeid)
+    if data is None:
+        return flask.jsonify({'error':'volumeid '+volumeid+' doesn\'t exist'})
+    else:
+        info = {
+                'name': data[0],
+                'volumeid':volumeid,
+                'size':data[1],
+                }
+        if data[2] == 0:
+            info['status']='available'
+        else:
+            info['status']='attached'
+            info['vmid']=data[2]
+        return flask.jsonify(info)
+
+@app.route('/volume/destroy')
+def destroy_vol():
+    volumeid = request.args.get('volumeid', None)
+    status = storage.delete_volume(volumeid)
+    return flask.jsonify({'status':status})
+
+@app.route('/volume/attach')
+def attach():
+    vmid = request.args.get('vmid', None)
+    volumeid = request.args.get('volumeid', None)
+
+    status = storage.attach_volume(vmid, volumeid)
+    return flask.jsonify({'status':status})
+
+@app.route('/volume/detach')
+def detach():
+    volumeid = request.args.get('volumeid', None)
+    status = storage.detach_volume(volumeid)
+    return flask.jsonify({'status':status})
+
+
+# requests related to installation images
 @app.route('/image/list')
 def image_list():
     """
