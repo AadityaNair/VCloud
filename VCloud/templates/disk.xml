@@ -1,0 +1,4 @@
+<disk type='file' device='disk'>
+        <source file='/dev/rbd/{{pool_name}}/{{volume}}'/>
+        <target dev='vdb' bus='virtio'/>
+</disk>
